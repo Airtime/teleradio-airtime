@@ -1,0 +1,173 @@
+<?
+
+include('includes/teleradio.menu.php');
+
+function airtime_js_test_api($host)
+	{
+		/*только для airtime где установлен загловок Access-Control-Allow-Origin: * */
+		airtime_js_init();
+		drupal_add_js(array('Airtime'=>array('host'=> $host)), 'setting');
+		drupal_add_js(drupal_get_path('module', 'teleradio').'/js/function.airtime.js');
+	}
+
+function teleradio_airtime_js_init()
+	{
+		airtime_js_init();
+		drupal_add_js(drupal_get_path('module', 'teleradio').'/js/function.airtime.js');
+	}
+
+	
+function airtime_current_show($host)
+	{
+		//$airtime = airtime_api_request($host, 'live-info');
+		$airtime = new Airtime($host);
+		$live = $airtime->api->get('live-info');
+		$current_show = $live->currentShow[0];
+		$curent_track = $live->current->name;
+		$next_show = $live->nextShow[0];
+		$output = '<div>Сейчас: '.$current_show->name.' | '.$curent_track ;
+		$output .= '<small> (<span>'.date('H.i', strtotime($current_show->start_timestamp)).'</span>';
+		$output .= ' - <span>'.date('H.i', strtotime($current_show->end_timestamp)).'</span>)</small> ';
+		$output .= '</div>';
+		
+		$output .= '<div>Далее: '.$next_show->name ;
+		$output .= '<small> (<span>'.date('H.i', strtotime($next_show->start_timestamp)).'</span>';
+		$output .= ' - <span>'.date('H.i', strtotime($next_show->end_timestamp)).'</span>)</small>';
+		$output .= '</div>';
+		
+		return $output;
+	}
+
+function airtime_week_info($nid)
+	{
+		//$airtime = new Airtime($host);
+		//$week = $airtime->api->get('week-info');
+		
+		$options = (object)array(
+			'nid' => $nid,
+			'method' => 'week-info',
+			'api_key' => '',
+			'arguments' => (object) array(
+				'file' => '123'
+			)
+		);
+		$airtime = new Airtime($options);
+		$week = $airtime->json();
+		
+		$output = '
+		<div class="tabbable">
+			<ul class="nav nav-tabs">
+				<li class="active">
+					<a href="#tab-monday" data-toggle="tab">Понедельник</a>
+				</li>
+				<li>
+					<a href="#tab-tuesday" data-toggle="tab">Вторник</a>
+				</li>
+				<li>
+					<a href="#tab-wednesday" data-toggle="tab">Среда</a>
+				</li>
+				<li>
+					<a href="#tab-thursday" data-toggle="tab">Четверг</a>
+				</li>
+				<li>
+					<a href="#tab-friday" data-toggle="tab">Пятница</a>
+				</li>
+				<li>
+					<a href="#tab-saturday" data-toggle="tab">Суббота</a>
+				</li>
+				<li>
+					<a href="#tab-sunday" data-toggle="tab">Воскресенье</a>
+				</li>
+			</ul>
+			<div class="tab-content">
+				<div class="tab-pane active" id="tab-monday">
+					'.airtime_day_info($week->monday).'
+				</div>
+				<div class="tab-pane" id="tab-tuesday">
+					'.airtime_day_info($week->tuesday).'
+				</div>
+				<div class="tab-pane" id="tab-wednesday">
+					'.airtime_day_info($week->wednesday).'
+				</div>
+				<div class="tab-pane" id="tab-thursday">
+					'.airtime_day_info($week->thursday).'
+				</div>
+				<div class="tab-pane" id="tab-friday">
+					'.airtime_day_info($week->friday).'
+				</div>
+				<div class="tab-pane" id="tab-saturday">
+					'.airtime_day_info($week->saturday).'
+				</div>
+				<div class="tab-pane" id="tab-sunday">
+					'.airtime_day_info($week->sunday).'
+				</div>
+			</div>
+		</div>'; 
+		return $output;
+	}
+
+function airtime_day_info($day)
+	{
+		if(!empty($day)) 
+			{
+				$list ='';
+				foreach($day as $show)
+					{
+						$list .= '<li><span>'.date('H.i', strtotime($show->start_timestamp)).'</span> - 
+										<span>'.date('H.i', strtotime($show->end_timestamp)).'</span>
+										 '.$show->name.'</li>';
+					}
+				$schedule = '<ul>'.$list.'</ul>';
+				return $schedule;
+			}
+		else
+			{
+				return false;
+			}
+		
+	}
+
+function _check_browser()
+	{
+		$iPod    = stripos($_SERVER['HTTP_USER_AGENT'],"iPod");
+		$iPhone  = stripos($_SERVER['HTTP_USER_AGENT'],"iPhone");
+		$iPad    = stripos($_SERVER['HTTP_USER_AGENT'],"iPad");
+		$Android = stripos($_SERVER['HTTP_USER_AGENT'],"Android");
+		$webOS   = stripos($_SERVER['HTTP_USER_AGENT'],"webOS");
+		
+		if($iPod || $iPhone || $iPad || $Android)
+			{
+				$format = 'html5';
+			}
+		else {
+			$format = 'flash';
+		}
+	return $format;
+	
+	}
+
+function _set_video_player($stream)
+	{
+		
+		if(_check_browser() == 'html5')
+			{
+				print '
+					<video controls autoplay name="media" class="videoplayer" id="player">
+ 						<source src="'.$stream.'" type="audio/mpeg">
+ 					</video>'
+					;
+			}
+		else
+			{
+				drupal_add_js('/flowplayer/flowplayer-3.2.12.min.js');
+				drupal_add_js('/flowplayer/flowplayer.playlist-3.0.8.min.js');
+				print '<div class="videoplayer" id="player" class="flowplayer" data-src="'.$stream.'"></div>';
+			}
+	}	
+function _set_audio_player($stream)
+	{
+		print('<audio controls autoplay name="media" class="audioplayer">
+ 			<source src="'.$stream.'" type="audio/mpeg">
+ 		</audio>');
+	}
+

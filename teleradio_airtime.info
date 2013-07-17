@@ -1,0 +1,6 @@
+name = Airtime для Телерадио
+dependecies[] = airtime
+description = "Функционал для связи с Airtime"
+core = "7.x"
+package = "Airtime"
+
