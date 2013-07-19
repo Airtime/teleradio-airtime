@@ -13,15 +13,20 @@ function airtime_js_test_api($host)
 function teleradio_airtime_js_init()
 	{
 		airtime_js_init();
-		drupal_add_js(drupal_get_path('module', 'teleradio').'/js/function.airtime.js');
+		drupal_add_js(drupal_get_path('module', 'teleradio_airtime').'/js/function.airtime.js');
 	}
 
 	
-function airtime_current_show($host)
+function airtime_current_show($nid)
 	{
 		//$airtime = airtime_api_request($host, 'live-info');
-		$airtime = new Airtime($host);
-		$live = $airtime->api->get('live-info');
+		$options = (object)array(
+			'nid' => $nid,
+			'method' => 'live-info',
+			'api_key' => ''
+		);
+		$airtime = new Airtime($options);
+		$live = $airtime->json();
 		$current_show = $live->currentShow[0];
 		$curent_track = $live->current->name;
 		$next_show = $live->nextShow[0];
