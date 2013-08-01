@@ -58,9 +58,12 @@ function airtime_week_info($nid)
 		);
 		$airtime = new Airtime($options);
 		$week = $airtime->json();
-		
+		if(!$week)
+			{
+				return false;
+			}
 		$output = '
-		<div class="tabbable">
+		<div class="chanel-week-schedule tabbable">
 			<ul class="nav nav-tabs">
 				<li class="active">
 					<a href="#tab-monday" data-toggle="tab">Понедельник</a>
