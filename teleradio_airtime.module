@@ -174,6 +174,7 @@ function _set_video_player($stream)
 	}	
 function _set_audio_player($stream)
 	{
+		/* желательно подключить библиотеку audio.js*/
 		print('<audio controls autoplay name="media" class="audioplayer">
  			<source src="'.$stream.'" type="audio/mpeg">
  		</audio>');
