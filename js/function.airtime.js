@@ -11,7 +11,9 @@
 					 *
 					$('#shedule').append('Airtime API version: ' + data.AIRTIME_API_VERSION+'<br>');
 					*/
-					$('#shedule').append('Сейчас играет: <span id="current-track">' + data.current.name + '</span>');
+					audiojs.events.ready(function() {
+						$('.audiojs').append('<span id="current-track">' + data.current.name + '</span>');
+					});
 				}
 			
 		}

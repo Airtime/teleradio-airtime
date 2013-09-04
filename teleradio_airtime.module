@@ -159,24 +159,25 @@ function _set_video_player($stream)
 		
 		if(_check_browser() == 'html5')
 			{
+				/*Adding html5 video tag*/
 				print '
-					<video controls autoplay name="media" class="videoplayer" id="player">
+					<video controls autoplay name="media" class="videoplayer" id="player-video">
  						<source src="'.$stream.'" type="audio/mpeg">
  					</video>'
 					;
 			}
 		else
 			{
-				drupal_add_js('/flowplayer/flowplayer-3.2.12.min.js');
-				drupal_add_js('/flowplayer/flowplayer.playlist-3.0.8.min.js');
-				print '<div class="videoplayer" id="player" class="flowplayer" data-src="'.$stream.'"></div>';
+				/*Adding flowplayer flash*/
+				//drupal_add_js('/flowplayer/flowplayer-3.2.12.min.js');
+				//drupal_add_js('/flowplayer/flowplayer.playlist-3.0.8.min.js');
+				print '<div class="videoplayer" id="player-video" class="flowplayer" data-src="'.$stream.'"></div>';
 			}
 	}	
 function _set_audio_player($stream)
 	{
 		/* желательно подключить библиотеку audio.js*/
-		print('<audio controls autoplay name="media" class="audioplayer">
- 			<source src="'.$stream.'" type="audio/mpeg">
+		print('<audio preload="none" class="" id="player-audio" src="'.$stream.'" type="audio/mpeg">
  		</audio>');
 	}
 
