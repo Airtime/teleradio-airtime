@@ -154,29 +154,41 @@ function _check_browser()
 	
 	}
 
-function _set_video_player($stream)
+function _set_video_player($node)
 	{
 		
 		if(_check_browser() == 'html5')
 			{
+				if(isset($node->field_stream_mobile['und'][0]['value']))
+					{
+						$stream = $node->field_stream_mobile['und'][0]['value'];
+					}
+				else {
+					$stream = $node->field_stream['und'][0]['value'];
+				}
 				/*Adding html5 video tag*/
 				print '
 					<video controls autoplay name="media" class="videoplayer" id="player-video">
  						<source src="'.$stream.'" type="audio/mpeg">
- 					</video>'
-					;
+ 					</video>
+ 					<div class=" btn-group" style="z-index: 100;">
+						<a class="btn btn-large" href="'.$stream = $node->field_stream['und'][0]['value'].'">720</a> 
+	 					<a class="btn btn-large" href="'.$stream = $node->field_stream_mobile['und'][0]['value'].'">320</a>
+ 					</div><br>';
 			}
 		else
 			{
 				/*Adding flowplayer flash*/
 				//drupal_add_js('/flowplayer/flowplayer-3.2.12.min.js');
 				//drupal_add_js('/flowplayer/flowplayer.playlist-3.0.8.min.js');
+				$stream = $node->field_stream['und'][0]['value'];
 				print '<div class="videoplayer" id="player-video" class="flowplayer" data-src="'.$stream.'"></div>';
 			}
 	}	
-function _set_audio_player($stream)
+function _set_audio_player($node)
 	{
 		/* желательно подключить библиотеку audio.js*/
+		$stream = $node->field_stream['und'][0]['value'];
 		print('<audio preload="none" class="" id="player-audio" src="'.$stream.'" type="audio/mpeg">
  		</audio>');
 	}
